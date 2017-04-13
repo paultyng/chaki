@@ -1,0 +1,7 @@
+.task-preview:hover {
+  background-color: #44bba4;
+}
+
+.task-preview.focus {
+  background-color: #e7bb41;
+}
