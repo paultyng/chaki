@@ -9,6 +9,7 @@
  */
 
 import React from 'react';
+import yaml from 'js-yaml';
 
 function decodeParam(val) {
   if (!(typeof val === 'string' || val.length === 0)) {
@@ -71,7 +72,17 @@ function resolve(routes, context) {
           Object.keys(params).forEach((k) => {
             url = url.replace(`${k}`, params[k]);
           });
-          return fetch(url, { method }).then(resp => resp.json());
+          return fetch(url, { method })
+            .then(resp => resp.text())
+            .then(t => {
+              console.log(t);
+              return t;
+            })
+            .then(text => yaml.safeLoad(text))
+            .then(o => {
+              console.log(o);
+              return o;
+            });
         }),
       ]).then(([Page, ...data]) => {
         const props = keys.reduce((result, key, i) => ({ ...result, [key]: data[i] }), {});
