@@ -1,6 +1,0 @@
-{
-  "name": "TaskList",
-  "version": "0.0.0",
-  "private": true,
-  "main": "./TaskList.js"
-}
