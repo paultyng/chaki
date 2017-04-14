@@ -1,76 +1,21 @@
 import React, { Component } from 'react';
-import fuzzy from 'fuzzy';
 import Form from "react-jsonschema-form";
+import fuzzy from 'fuzzy';
+
+import TaskPreview from './TaskPreview';
 
 import './App.css';
 
-const separator = '::';
-
-const fuzzyOptions = {
-  pre: '>>',
-  post: '<<',
-  extract: t => [t.title, t.description].join(separator),
-}
-
-class HighlightText extends Component {
-  render() {
-    const highlights = this.props.text.split('>>');
-    const first = highlights.shift();
-    return (
-      <span>
-        {first}
-        {highlights.map(s => s.split('<<', 2)).map((s, i) =>
-          <span key={i}>
-            <span style={{color: 'red'}}>{s[0]}</span>
-            {s[1]}
-          </span>
-        )}
-      </span>
-    )
-  }
-}
-
-class TaskPreview extends Component {
-  handleSelect(e) {
-    if (this.props.onSelect) {
-      this.props.onSelect(this.props.task);
-    }
-  }
-
-  render() {
-    return (
-      <li className="task-preview" onClick={this.handleSelect.bind(this)}>
-        <h3><HighlightText text={this.props.task.highlightTitle} /></h3>
-        <p><HighlightText text={this.props.task.highlightDescription} /></p>
-      </li>
-    )
-  }
-}
-
 class TaskList extends Component {
-  handleSearchChange(e) {
-    this.setState({ search: e.target.value });
-  }
-
   render() {
-    const search = this.state && this.state.search ? this.state.search : '';
-    const results = fuzzy
-      .filter(search, this.props.tasks, fuzzyOptions)
-      .map(r => {
-        const strings = r.string.split(separator);
-        return Object.assign({}, r.original, {
-          highlightTitle: strings[0],
-          highlightDescription: strings[1],
-        });
-      });
     return (
       <div className="task-list">
         <div className="header">
-          <input placeholder="Search tasks" type="search" value={search} onChange={this.handleSearchChange.bind(this)} />
+          <input placeholder="Search tasks" type="search" value={this.props.search} onChange={(e) => this.props.onSearch && this.props.onSearch(e.target.value)} />
         </div>
         <ol>
-          {results.map(task =>
-            <TaskPreview key={task.name} task={task} onSelect={this.props.onSelect} />,
+          {this.props.tasks.map(task =>
+            <TaskPreview key={task.name} task={task} onSelect={this.props.onSelectTask} />,
           )}
         </ol>
       </div>
@@ -79,9 +24,9 @@ class TaskList extends Component {
 }
 
 class TaskDetail extends Component {
-  handleExit() {
-    this.props.onExit && this.props.onExit();
-  }
+  // handleExit() {
+  //   this.props.onExit && this.props.onExit();
+  // }
 
   render() {
     const schema = Object.assign({
@@ -89,7 +34,6 @@ class TaskDetail extends Component {
       type: 'object',
       title: null,
     });
-    console.log(schema);
     return (
       <div className="task-detail">
         <div className="header">
@@ -102,16 +46,72 @@ class TaskDetail extends Component {
   }
 }
 
+const separator = '::';
+
+const fuzzyOptions = {
+  pre: '>>',
+  post: '<<',
+  extract: t => [t.title, t.description].join(separator),
+}
+
+function filterTasks(tasks, search) {
+  return fuzzy
+    .filter(search, tasks, fuzzyOptions)
+    .map(r => {
+      const strings = r.string.split(separator);
+      return Object.assign({}, r.original, {
+        highlightTitle: strings[0],
+        highlightDescription: strings[1],
+      });
+    });
+}
+
 class App extends Component {
+  constructor(props) {
+    super(props);
+
+    const search = '';
+
+    this.state = {
+      filteredTasks: filterTasks(this.props.tasks, search),
+      focusedTask: this.props.tasks[0],
+      search,
+      detailTask: null,
+    };
+  }
+
+  handleSearch(search) {
+    const filteredTasks = filterTasks(this.props.tasks, search);
+
+    this.setState({
+      search,
+      filteredTasks,
+      focusedTask: filteredTasks[0],
+    });
+  }
+
   handleSelect(task) {
-    this.setState({ currentTask: task });
+    this.setState({
+      search: '',
+      detailTask: task,
+      focusedTask: task,
+    });
   }
 
   render() {
-    let body = <TaskList tasks={this.props.tasks} onSelect={this.handleSelect.bind(this)} />;
-
-    if (this.state != null && this.state.currentTask != null) {
-      body = <TaskDetail task={this.state.currentTask} onExit={() => this.handleSelect(null)} />;
+    let body;
+    if (this.state.detailTask != null) {
+      body = <TaskDetail
+        task={this.state.detailTask}
+        onExit={() => this.handleSelect(null)}
+        />;
+    } else {
+      body = <TaskList
+        tasks={this.state.filteredTasks}
+        search={this.state.search}
+        onSelectTask={this.handleSelect.bind(this)}
+        onSearch={this.handleSearch.bind(this)}
+        />;
     }
 
     return (
