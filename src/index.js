@@ -1,3 +1,4 @@
+import createHistory from 'history/createBrowserHistory';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -54,6 +55,6 @@ const tasks = [
 ]
 
 ReactDOM.render(
-  <App tasks={tasks} />,
+  <App tasks={tasks} history={ createHistory() } />,
   document.getElementById('root')
 );
