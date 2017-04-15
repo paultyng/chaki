@@ -14,16 +14,17 @@ const tasks = [
     "schema": {
       "properties": {
         "id": {
+          "title": "User ID",
           "type": "integer"
         },
         "email": {
+          "title": "Email",
           "pattern": "@",
           "type": "string"
         }
       }
     },
-    "uiSchema": {},
-    "defaultData": {}
+    "uiSchema": {}
   },
   {
     "name": "update-order-status",
@@ -32,23 +33,23 @@ const tasks = [
     "schema": {
       "properties": {
         "number": {
+          "title": "Order Number",
           "type": "string",
           "pattern": "[0-9]+"
         },
         "status": {
+          "title": "Status",
           "type": "string",
           "enum": [
             "shipped",
             "delivered",
             "cancelled"
-          ]
+          ],
+          "default": "shipped"
         }
       }
     },
-    "uiSchema": {},
-    "defaultData": {
-      "status": "shipped"
-    }
+    "uiSchema": {}
   }
 ]
 

@@ -7,7 +7,6 @@ class TaskDetail extends Component {
   }
 
   render() {
-    const formData = Object.assign({}, this.props.task.defaultData);
     const uiSchema = Object.assign({}, this.props.task.uiSchema);
     const schema = Object.assign({
     }, this.props.task.schema, {
@@ -21,8 +20,7 @@ class TaskDetail extends Component {
         </div>
         <p>{this.props.task.description}</p>
         <Form schema={schema}
-          uiSchema={uiSchema}
-          formData={formData} />
+          uiSchema={uiSchema} />
       </div>
     );
   }
