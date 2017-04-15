@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 
 import HighlightText from './HighlightText';
 
+import './TaskPreview.css';
+
 class TaskPreview extends Component {
   handleSelect(e) {
     if (this.props.onSelect) {

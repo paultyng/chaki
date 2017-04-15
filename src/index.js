@@ -21,7 +21,9 @@ const tasks = [
           "type": "string"
         }
       }
-    }
+    },
+    "uiSchema": {},
+    "defaultData": {}
   },
   {
     "name": "update-order-status",
@@ -42,6 +44,10 @@ const tasks = [
           ]
         }
       }
+    },
+    "uiSchema": {},
+    "defaultData": {
+      "status": "shipped"
     }
   }
 ]
