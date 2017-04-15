@@ -11,7 +11,7 @@ class TaskPreview extends Component {
 
   render() {
     return (
-      <li className="task-preview" onClick={this.handleSelect.bind(this)}>
+      <li className={`task-preview ${this.props.focus ? 'focus' : ''}`} onClick={this.handleSelect.bind(this)}>
         <h3><HighlightText text={this.props.task.highlightTitle} /></h3>
         <p><HighlightText text={this.props.task.highlightDescription} /></p>
       </li>

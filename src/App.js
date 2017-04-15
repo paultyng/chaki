@@ -7,15 +7,47 @@ import TaskPreview from './TaskPreview';
 import './App.css';
 
 class TaskList extends Component {
+  handleKeyDown(e) {
+    const i = this.props.tasks.indexOf(this.props.focusedTask)
+    let delta = 0;
+    switch(e.keyCode) {
+      case 13: //enter
+        this.props.onSelectTask && this.props.onSelectTask(this.props.focusedTask);
+        return;
+      case 38: //up
+        delta = -1;
+        break;
+      case 40: //down
+        delta = 1;
+        break;
+    }
+
+    if (delta !== 0 && this.props.onFocusTask) {
+      const newI = i + delta;
+      if (newI >= 0 && newI < this.props.tasks.length) {
+        this.props.onFocusTask(this.props.tasks[newI]);
+      }
+    }
+  }
+
   render() {
     return (
       <div className="task-list">
         <div className="header">
-          <input placeholder="Search tasks" type="search" value={this.props.search} onChange={(e) => this.props.onSearch && this.props.onSearch(e.target.value)} />
+          <input placeholder="Search tasks"
+            type="search"
+            value={this.props.search}
+            onKeyDown={this.handleKeyDown.bind(this)}
+            onChange={(e) => this.props.onSearch && this.props.onSearch(e.target.value)}
+            />
         </div>
         <ol>
           {this.props.tasks.map(task =>
-            <TaskPreview key={task.name} task={task} onSelect={this.props.onSelectTask} />,
+            <TaskPreview
+              key={task.name}
+              task={task}
+              focus={this.props.focusedTask === task}
+              onSelect={this.props.onSelectTask} />,
           )}
         </ol>
       </div>
@@ -80,6 +112,12 @@ class App extends Component {
     };
   }
 
+  handleFocus(task) {
+    this.setState({
+      focusedTask: task,
+    });
+  }
+
   handleSearch(search) {
     const filteredTasks = filterTasks(this.props.tasks, search);
 
@@ -109,6 +147,8 @@ class App extends Component {
       body = <TaskList
         tasks={this.state.filteredTasks}
         search={this.state.search}
+        focusedTask={this.state.focusedTask}
+        onFocusTask={this.handleFocus.bind(this)}
         onSelectTask={this.handleSelect.bind(this)}
         onSearch={this.handleSearch.bind(this)}
         />;
