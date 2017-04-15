@@ -32,23 +32,28 @@ class App extends Component {
 
     const search = '';
 
+    const initialLocation = props.history.location;
+    const [initialTask] = props.tasks;
+    
+    const detailTask = this.getTaskForLocation(initialLocation);
+    this.unlisten = props.history.listen(this.handleRouteChange)
+
     this.state = {
-      filteredTasks: filterTasks(this.props.tasks, search),
-      focusedTask: this.props.tasks[0],
+      filteredTasks: filterTasks(props.tasks, search),
+      focusedTask: initialTask,
       search,
-      detailTask: null,
+      detailTask,
     };
   }
 
-  handleFocus(task) {
+  handleFocus = (task) => {
     this.setState({
       focusedTask: task,
     });
   }
 
-  handleSearch(search) {
+  handleSearch = (search) => {
     const filteredTasks = filterTasks(this.props.tasks, search);
-
     this.setState({
       search,
       filteredTasks,
@@ -56,12 +61,30 @@ class App extends Component {
     });
   }
 
-  handleSelect(task) {
+  handleSelect = ({ name }) => {
+    const { history } = this.props;
+    history.push(name);
+  }
+
+  handleRouteChange = (location) => {
+    const task = this.getTaskForLocation(location);
+    const { tasks } = this.props;
     this.setState({
       search: '',
-      detailTask: task,
       focusedTask: task,
+      filteredTasks: filterTasks(tasks, ''),
+      detailTask: task,
     });
+  }
+
+  getTaskForLocation = (location) => {
+    const { tasks } = this.props;
+    const [task] = tasks.filter(({ name }) => name === location.pathname.replace('/', ''));
+    return task;
+  }
+
+  componentWillUnmount() {
+    this.unlisten();
   }
 
   render() {
@@ -76,9 +99,9 @@ class App extends Component {
         tasks={this.state.filteredTasks}
         search={this.state.search}
         focusedTask={this.state.focusedTask}
-        onFocusTask={this.handleFocus.bind(this)}
-        onSelectTask={this.handleSelect.bind(this)}
-        onSearch={this.handleSearch.bind(this)}
+        onFocusTask={this.handleFocus}
+        onSelectTask={this.handleSelect}
+        onSearch={this.handleSearch}
         />;
     }
 
