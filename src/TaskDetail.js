@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import Form from "react-jsonschema-form";
 
+import './TaskDetail.css';
+
 class TaskDetail extends Component {
   handleExit() {
     this.props.onExit && this.props.onExit();
