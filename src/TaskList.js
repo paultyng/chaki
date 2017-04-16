@@ -18,6 +18,8 @@ class TaskList extends Component {
       case 40: //down
         delta = 1;
         break;
+      default:
+        //nothing to do
     }
 
     if (delta !== 0 && this.props.onFocusTask) {

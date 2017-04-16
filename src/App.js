@@ -1,3 +1,4 @@
+import 'whatwg-fetch';
 import fuzzy from 'fuzzy';
 import React, { Component } from 'react';
 
@@ -26,24 +27,51 @@ function filterTasks(tasks, search) {
     });
 }
 
+function getTaskForLocation (tasks, location) {
+  const [task] = tasks.filter(({ name }) => name === location.pathname.replace('/', ''));
+  return task;
+}
+
 class App extends Component {
   constructor(props) {
     super(props);
 
-    const search = '';
-
-    const initialLocation = props.history.location;
-    const [initialTask] = props.tasks;
-    
-    const detailTask = this.getTaskForLocation(initialLocation);
-    this.unlisten = props.history.listen(this.handleRouteChange)
+    const { history } = props;
+    const initialLocation = history.location;
+    this.unlisten = history.listen(this.handleRouteChange)
 
     this.state = {
-      filteredTasks: filterTasks(props.tasks, search),
-      focusedTask: initialTask,
-      search,
-      detailTask,
+      initialLocation,
+      tasks: [],
+      filteredTasks: [],
+      search: '',
     };
+  }
+
+  componentDidMount() {
+    fetch('/api/tasks')
+      .then(r => r.json())
+      .then(r => {
+        const tasks = [];
+        for (const name in r.tasks) {
+          const t = r.tasks[name];
+          Object.assign(t, { name });
+          tasks.push(t);
+        }
+        return tasks;
+      })
+      .then(tasks => {
+        const { search, focusedTask, initialLocation } = this.state;
+        const [initialTask] = tasks;
+        const detailTask = getTaskForLocation(tasks, initialLocation);
+
+        this.setState({
+          tasks,
+          filteredTasks: filterTasks(tasks, search),
+          focusedTask: focusedTask || initialTask,
+          detailTask,
+        })
+      });
   }
 
   handleFocus = (task) => {
@@ -53,7 +81,7 @@ class App extends Component {
   }
 
   handleSearch = (search) => {
-    const filteredTasks = filterTasks(this.props.tasks, search);
+    const filteredTasks = filterTasks(this.state.tasks, search);
     this.setState({
       search,
       filteredTasks,
@@ -61,26 +89,24 @@ class App extends Component {
     });
   }
 
-  handleSelect = ({ name }) => {
+  handleSelect = (task) => {
     const { history } = this.props;
-    history.push(name);
+    if (task) {
+      history.push(task.name);
+    } else {
+      history.push('/');
+    }
   }
 
   handleRouteChange = (location) => {
-    const task = this.getTaskForLocation(location);
-    const { tasks } = this.props;
+    const { tasks } = this.state;
+    const task = getTaskForLocation(tasks, location);
     this.setState({
       search: '',
       focusedTask: task,
       filteredTasks: filterTasks(tasks, ''),
       detailTask: task,
     });
-  }
-
-  getTaskForLocation = (location) => {
-    const { tasks } = this.props;
-    const [task] = tasks.filter(({ name }) => name === location.pathname.replace('/', ''));
-    return task;
   }
 
   componentWillUnmount() {

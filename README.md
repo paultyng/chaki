@@ -48,11 +48,7 @@ tasks:
 ## Running
 
 ```bash
-# server
 go install
+yarn build
 chaki serve
-
-# in another shell
-# client
-yarn start
 ```

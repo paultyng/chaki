@@ -17,7 +17,21 @@ func (t *DBTask) run(data map[string]interface{}, c *Config) error {
 		return err
 	}
 
-	_, err = conn.NamedExec(t.SQL, data)
+	tx, err := conn.Beginx()
+	if err != nil {
+		return err
+	}
+
+	sql := []string(t.SQL)
+
+	for _, s := range sql {
+		_, err = tx.NamedExec(s, data)
+		if err != nil {
+			return err
+		}
+	}
+
+	err = tx.Commit()
 	if err != nil {
 		return err
 	}

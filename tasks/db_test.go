@@ -20,21 +20,21 @@ func TestRun(t *testing.T) {
 	}
 
 	cases := []struct {
-		sql  string
+		sql  OptionalStringArray
 		data map[string]interface{}
 	}{
 		{
-			"select 1",
+			OptionalStringArray{"select 1", "select 2", "select 3"},
 			nil,
 		},
 		{
-			"select :foo",
+			OptionalStringArray{"select :foo"},
 			map[string]interface{}{
 				"foo": "bar",
 			},
 		},
 		{
-			"select :foo, :bar",
+			OptionalStringArray{"select :foo, :bar", "select :bar", "select :foo"},
 			map[string]interface{}{
 				"foo": "sss",
 				"bar": 123,

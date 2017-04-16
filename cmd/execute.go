@@ -16,14 +16,14 @@ import (
 
 // execCmd represents the exec command
 var execCmd = &cobra.Command{
-	Use:   "exec",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Use:        "execute",
+	Aliases:    []string{"exec", "e"},
+	SuggestFor: []string{"run"},
+	Short:      "Execute a task from the command line",
+	Long: `Execute allows you to run a task without the need
+for the web UI.  Simply supply data via JSON or YAML, as a
+parameter or on STDIN, and the CLI will handle the rest.
+`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		taskName, err := cmd.PersistentFlags().GetString("name")
 		if err != nil {
@@ -61,29 +61,16 @@ to quickly create a Cobra application.`,
 			}
 		}
 
-		tasksFile, err := cmd.PersistentFlags().GetString("tasks-file")
-		if err != nil {
-			return err
-		}
-
-		log.Printf("[INFO] Using task file %s", tasksFile)
-
-		file, err := os.Open(tasksFile)
-		if err != nil {
-			return err
-		}
-
-		config, err := tasks.NewConfig(file)
-		if err != nil {
-			return err
-		}
+		config, err := loadTaskConfig(cmd)
 
 		log.Printf("[INFO] Running task %s", taskName)
 
 		err = config.Run(taskName, taskData)
 		if ve, ok := err.(*tasks.ValidationError); ok {
-			for _, e := range ve.Result.Errors() {
-				log.Printf("[Error] %s", e)
+			for field, errors := range ve.FieldErrors() {
+				for _, e := range errors {
+					log.Printf("[ERROR] %s: %s", field, e)
+				}
 			}
 			return ve
 		}
@@ -101,5 +88,5 @@ func init() {
 	execCmd.PersistentFlags().StringP("name", "n", "", "name of the task to execute")
 	execCmd.PersistentFlags().StringP("data", "d", "", "JSON data for the task, use '-' for stdin")
 
-	execCmd.PersistentFlags().StringP("tasks-file", "t", "tasks.yaml", "file for loading task list")
+	addTaskConfigFlags(execCmd)
 }
