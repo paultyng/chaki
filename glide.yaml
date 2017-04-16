@@ -1,0 +1,14 @@
+package: go.ua-ecm.com/chaki
+import:
+- package: github.com/xeipuuv/gojsonschema
+- package: github.com/ghodss/yaml
+  version: ^1.0.0
+- package: github.com/jmoiron/sqlx
+- package: github.com/mattn/go-sqlite3
+  version: ^1.2.0
+- package: github.com/lib/pq
+- package: github.com/denisenkom/go-mssqldb
+- package: github.com/stretchr/testify
+  version: ^1.1.4
+  subpackages:
+  - assert
