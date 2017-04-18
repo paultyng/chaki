@@ -15,6 +15,7 @@ class TaskDetail extends Component {
     switch (e.keyCode) {
       case 27:
         this.props.onExit && this.props.onExit();
+        e.preventDefault();
         break;
       default:
         //nothing to do

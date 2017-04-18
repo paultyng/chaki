@@ -5,18 +5,21 @@ import TaskPreview from './TaskPreview';
 import './TaskList.css';
 
 class TaskList extends Component {
-  handleKeyDown(e) {
+  handleKeyUp(e) {
     const i = this.props.tasks.indexOf(this.props.focusedTask)
     let delta = 0;
     switch(e.keyCode) {
       case 13: //enter
         this.props.onSelectTask && this.props.onSelectTask(this.props.focusedTask);
+        e.preventDefault();
         return;
       case 38: //up
         delta = -1;
+        e.preventDefault();
         break;
       case 40: //down
         delta = 1;
+        e.preventDefault();
         break;
       default:
         //nothing to do
@@ -42,7 +45,7 @@ class TaskList extends Component {
             ref={r => this.searchInput = r}
             type="search"
             value={this.props.search}
-            onKeyDown={this.handleKeyDown.bind(this)}
+            onKeyUp={this.handleKeyUp.bind(this)}
             onChange={(e) => this.props.onSearch && this.props.onSearch(e.target.value)}
             />
         </div>
