@@ -1,4 +1,16 @@
-body, input {
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+body {
   font-size: 200%;
   margin: 0;
+  background-color: #e7e5df;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+input, select, button {
+  font-size: 150%;
 }

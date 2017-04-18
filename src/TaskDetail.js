@@ -34,7 +34,7 @@ class TaskDetail extends Component {
     })
     .then(({ status }) => {
       if (status !== 200) {
-        throw "Error running task";
+        throw new Error("Error running task");
       }
 
       this.setState({
@@ -66,12 +66,17 @@ class TaskDetail extends Component {
 
   render() {
     const { lastResult } = this.state;
-    const uiSchema = Object.assign({}, this.props.task.uiSchema);
     const schema = Object.assign({
     }, this.props.task.schema, {
       type: 'object',
       title: null,
     });
+    const firstProperty = Object.keys(schema.properties)[0];
+    const uiSchema = Object.assign({
+      [firstProperty]: {
+        "ui:autofocus": true,
+      },
+    }, this.props.task.uiSchema);
     let result = "";
 
     console.log(lastResult);
@@ -79,7 +84,7 @@ class TaskDetail extends Component {
     if (lastResult) {
       if (lastResult.success) {
         result = (
-          <div ref={r => this.resultDiv = r} class="result success">
+          <div ref={r => this.resultDiv = r} className="result success">
             <h4>Success!</h4>
           </div>
         );
@@ -101,6 +106,7 @@ class TaskDetail extends Component {
         <Form schema={schema}
           uiSchema={uiSchema}
           onSubmit={this.handleSubmit}
+          showErrorList={false}
         />
         {result}
       </div>
