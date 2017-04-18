@@ -47,7 +47,8 @@ tasks:
 
 ## Setup
 
-Generate a key for the JWT:
+1. Create a `tasks.yaml` file (see the [Task Format](#task-format))
+2. Generate a key for the JWT:
 
 ```bash
 ssh-keygen -t rsa -b 4096 -f chaki.key
@@ -56,6 +57,8 @@ openssl rsa -in chaki.key -pubout -outform PEM -out chaki.key.pub
 cat chaki.key
 cat chaki.key.pub
 ```
+
+3. Setup a `config.yaml` with your GHE OAuth ID and secret.
 
 ## Running
 
