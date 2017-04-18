@@ -1,12 +1,26 @@
 package server
 
 import (
+	"crypto/rsa"
 	"fmt"
+
+	"golang.org/x/oauth2"
 
 	"github.com/labstack/echo"
 	glog "github.com/labstack/gommon/log"
+	"go.ua-ecm.com/chaki/server/middleware"
 	"go.ua-ecm.com/chaki/tasks"
 )
+
+const githubEnterpriseDomain = "github.ua.com"
+
+// Config represents the config for a new Server.
+type Config struct {
+	Tasks             *tasks.Config
+	PrivateKey        *rsa.PrivateKey
+	OAuthClientID     string
+	OAuthClientSecret string
+}
 
 // Server represents the state of the web server.
 type Server struct {
@@ -15,17 +29,31 @@ type Server struct {
 }
 
 // New creates a new instance of the web server.
-func New(c *tasks.Config) *Server {
+func New(c *Config) *Server {
 	s := &Server{
 		echo:        echo.New(),
-		tasksConfig: c,
+		tasksConfig: c.Tasks,
 	}
+
 	e := s.echo
 	e.Logger.SetLevel(glog.INFO)
+	e.Use(middleware.OAuth2FromConfig(&middleware.OAuth2Config{
+		PrivateKey: c.PrivateKey,
+		OAuth2: &oauth2.Config{
+			ClientID:     c.OAuthClientID,
+			ClientSecret: c.OAuthClientSecret,
+			Scopes:       []string{"user:email"},
+			Endpoint:     middleware.GithubEnterpriseEndpoint(githubEnterpriseDomain),
+		},
+		EmailLookupFunc: middleware.GithubEnterpriseEmailLookup(githubEnterpriseDomain),
+	}))
 
-	e.GET("/api/tasks", s.getTasks)
-	e.POST("/api/tasks/:name/run", s.runTask)
+	api := e.Group("/api")
+	tasks := api.Group("/tasks")
+	tasks.GET("", s.getTasks)
+	tasks.POST("/:name/run", s.runTask)
 
+	// apparently static doesn't observe middleware unless you use Pre()?
 	names := s.tasksConfig.TaskNames()
 	for _, n := range names {
 		e.Static(fmt.Sprintf("/%s", n), "build")

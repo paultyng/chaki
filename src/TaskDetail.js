@@ -24,6 +24,7 @@ class TaskDetail extends Component {
   handleSubmit = ({ formData }) => {
     const { task: { name } } = this.props;
     fetch(`/api/tasks/${name}/run`, {
+      credentials: 'same-origin',
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

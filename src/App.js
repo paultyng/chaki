@@ -49,8 +49,20 @@ class App extends Component {
   }
 
   componentDidMount() {
-    fetch('/api/tasks')
-      .then(r => r.json())
+    fetch('/api/tasks', {
+      credentials: 'same-origin',
+    })
+      .then(r => {
+        switch(r.status) {
+          case 200:
+            return r.json();
+          case 401:
+            window.location.replace(`/login?redirect_url=${encodeURIComponent(this.props.history.location.pathname)}`);
+            throw new Error("Unauthorized");
+          default:
+            throw new Error(`Unexpected response ${r.status}`);
+        }
+      })
       .then(r => {
         const tasks = [];
         for (const name in r.tasks) {

@@ -45,6 +45,18 @@ tasks:
           default: shipped
 ```
 
+## Setup
+
+Generate a key for the JWT:
+
+```bash
+ssh-keygen -t rsa -b 4096 -f chaki.key
+# Don't add passphrase
+openssl rsa -in chaki.key -pubout -outform PEM -out chaki.key.pub
+cat chaki.key
+cat chaki.key.pub
+```
+
 ## Running
 
 ```bash

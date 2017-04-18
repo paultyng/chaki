@@ -18,3 +18,6 @@ yarn-error.log*
 
 vendor
 tasks.yaml
+chaki.key
+chaki.key.pub
+.config.yaml
