@@ -5,8 +5,6 @@ import React, { Component } from 'react';
 import TaskDetail from './TaskDetail';
 import TaskList from './TaskList';
 
-import './App.css';
-
 const separator = '::';
 
 const fuzzyOptions = {
@@ -144,7 +142,7 @@ class App extends Component {
     }
 
     return (
-      <div className="app">
+      <div className="app container">
         {body}
       </div>
     );

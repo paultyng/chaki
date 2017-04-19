@@ -2,7 +2,7 @@ import 'whatwg-fetch';
 import React, { Component } from 'react';
 import Form from "react-jsonschema-form";
 
-import './TaskDetail.css';
+import Navbar from './Navbar';
 
 class TaskDetail extends Component {
   constructor(props) {
@@ -86,14 +86,14 @@ class TaskDetail extends Component {
     if (lastResult) {
       if (lastResult.success) {
         result = (
-          <div ref={r => this.resultDiv = r} className="result success">
-            <h4>Success!</h4>
+          <div ref={r => this.resultDiv = r} className="alert alert-success">
+            Success!
           </div>
         );
       } else {
         result = (
-          <div ref={r => this.resultDiv = r} className="result error">
-            <h4>An error occurred</h4>
+          <div ref={r => this.resultDiv = r} className="alert alert-danger">
+            An error occurred
           </div>
         );
       }
@@ -101,9 +101,11 @@ class TaskDetail extends Component {
 
     return (
       <div className="task-detail" onKeyDown={this.handleKeyDown}>
-        <div className="header">
-          <h1>{this.props.task.title}</h1>
-        </div>
+        <Navbar />
+        <ol className="breadcrumb">
+          <li><a href="/">Home</a></li>
+          <li className="active">{this.props.task.title}</li>
+        </ol>
         <p>{this.props.task.description}</p>
         <Form schema={schema}
           uiSchema={uiSchema}

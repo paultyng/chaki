@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 
 import TaskPreview from './TaskPreview';
-
-import './TaskList.css';
+import Navbar from './Navbar';
 
 class TaskList extends Component {
   handleKeyUp(e) {
@@ -40,16 +39,21 @@ class TaskList extends Component {
   render() {
     return (
       <div className="task-list">
-        <div className="header">
-          <input placeholder="Search tasks"
-            ref={r => this.searchInput = r}
-            type="search"
-            value={this.props.search}
-            onKeyUp={this.handleKeyUp.bind(this)}
-            onChange={(e) => this.props.onSearch && this.props.onSearch(e.target.value)}
-            />
-        </div>
-        <ol>
+        <Navbar>
+          <div className="navbar-form navbar-left">
+            <div className="form-group">
+              <input placeholder="Search tasks"
+                className="form-control"
+                ref={r => this.searchInput = r}
+                type="search"
+                value={this.props.search}
+                onKeyUp={this.handleKeyUp.bind(this)}
+                onChange={(e) => this.props.onSearch && this.props.onSearch(e.target.value)}
+                />
+              </div>
+            </div>
+        </Navbar>
+        <ol className="list-group">
           {this.props.tasks.map(task =>
             <TaskPreview
               key={task.name}

@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 
 import HighlightText from './HighlightText';
 
-import './TaskPreview.css';
-
 class TaskPreview extends Component {
   handleSelect(e) {
     if (this.props.onSelect) {
@@ -13,9 +11,9 @@ class TaskPreview extends Component {
 
   render() {
     return (
-      <li className={`task-preview ${this.props.focus ? 'focus' : ''}`} onClick={this.handleSelect.bind(this)}>
-        <h3><HighlightText text={this.props.task.highlightTitle} /></h3>
-        <p><HighlightText text={this.props.task.highlightDescription} /></p>
+      <li className={`task-preview list-group-item ${this.props.focus ? 'active' : ''}`} onClick={this.handleSelect.bind(this)}>
+        <h3 className="list-group-item-heading"><HighlightText text={this.props.task.highlightTitle} /></h3>
+        <p className="list-group-item-text"><HighlightText text={this.props.task.highlightDescription} /></p>
       </li>
     )
   }
