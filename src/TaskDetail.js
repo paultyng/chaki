@@ -2,6 +2,7 @@ import 'whatwg-fetch';
 import React, { Component } from 'react';
 import Form from "react-jsonschema-form";
 
+import { assignDeep } from './assignDeep';
 import Navbar from './Navbar';
 
 class TaskDetail extends Component {
@@ -68,13 +69,13 @@ class TaskDetail extends Component {
 
   render() {
     const { lastResult } = this.state;
-    const schema = Object.assign({
+    const schema = assignDeep({
     }, this.props.task.schema, {
       type: 'object',
       title: null,
     });
     const firstProperty = Object.keys(schema.properties)[0];
-    const uiSchema = Object.assign({
+    const uiSchema = assignDeep({
       [firstProperty]: {
         "ui:autofocus": true,
       },
