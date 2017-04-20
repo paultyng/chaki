@@ -61,13 +61,12 @@ func New(c *Config) *Server {
 	tasks.GET("", s.getTasks)
 	tasks.POST("/:name/run", s.runTask)
 
-	// apparently static doesn't observe middleware unless you use Pre()?
 	names := s.tasksConfig.TaskNames()
 	for _, n := range names {
-		e.Static(fmt.Sprintf("/%s", n), "build")
+		e.GET(fmt.Sprintf("/%s", n), serveStatic("build/index.html"))
 	}
 
-	e.Static("/", "build")
+	e.GET("/*", serveStatic("build"))
 
 	return s
 }

@@ -22,3 +22,4 @@ chaki.key
 chaki.key.pub
 .config.yaml
 src/**/*.css
+static
