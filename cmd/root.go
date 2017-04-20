@@ -56,8 +56,10 @@ func initConfig() {
 	}
 
 	viper.SetConfigName(".config") // name of config file (without extension)
-	viper.AddConfigPath("$HOME")   // adding home directory as first search path
-	viper.AutomaticEnv()           // read in environment variables that match
+	viper.AddConfigPath(".")
+	viper.AddConfigPath("$HOME/.chaki")
+	viper.AddConfigPath("/etc/chaki")
+	viper.AutomaticEnv()
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {

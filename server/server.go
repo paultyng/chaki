@@ -8,7 +8,7 @@ import (
 
 	"github.com/labstack/echo"
 	glog "github.com/labstack/gommon/log"
-	"go.ua-ecm.com/chaki/server/middleware"
+	"go.ua-ecm.com/chaki/server/sso"
 	"go.ua-ecm.com/chaki/tasks"
 )
 
@@ -37,18 +37,26 @@ func New(c *Config) *Server {
 
 	e := s.echo
 	e.Logger.SetLevel(glog.INFO)
-	e.Use(middleware.OAuth2FromConfig(&middleware.OAuth2Config{
-		PrivateKey: c.PrivateKey,
+	//e.Use(middleware.Logger())
+
+	ssoConf := &sso.OAuth2Config{
+		JWTAuthConfig: sso.JWTAuthConfig{
+			PrivateKey: c.PrivateKey,
+		},
 		OAuth2: &oauth2.Config{
 			ClientID:     c.OAuthClientID,
 			ClientSecret: c.OAuthClientSecret,
 			Scopes:       []string{"user:email"},
-			Endpoint:     middleware.GithubEnterpriseEndpoint(githubEnterpriseDomain),
+			Endpoint:     sso.GithubEnterpriseEndpoint(githubEnterpriseDomain),
 		},
-		EmailLookupFunc: middleware.GithubEnterpriseEmailLookup(githubEnterpriseDomain),
-	}))
+		EmailLookupFunc: sso.GithubEnterpriseEmailLookup(githubEnterpriseDomain),
+		NoAuthn:         true,
+	}
+
+	e.Use(sso.OAuth2FromConfig(ssoConf))
 
 	api := e.Group("/api")
+	api.Use(sso.JWTAuthFromConfig(&ssoConf.JWTAuthConfig))
 	tasks := api.Group("/tasks")
 	tasks.GET("", s.getTasks)
 	tasks.POST("/:name/run", s.runTask)

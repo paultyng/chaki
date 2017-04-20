@@ -1,4 +1,4 @@
-package middleware
+package sso
 
 import (
 	"crypto/rsa"
@@ -11,16 +11,40 @@ import (
 	"golang.org/x/oauth2"
 )
 
+// JWTAuthConfig represents the config for the JWT authentication middleware.
+type JWTAuthConfig struct {
+	TokenCookieName string
+	PrivateKey      *rsa.PrivateKey
+}
+
 // OAuth2Config represents the config for the OAuth2 middleware.
 type OAuth2Config struct {
+	JWTAuthConfig
+
 	QueryParamNextPage string
-	TokenCookieName    string
 	LoginPath          string
 	LogoutPath         string
 	CallbackPath       string
 	OAuth2             *oauth2.Config
 	EmailLookupFunc    func(t *oauth2.Token) (string, error)
-	PrivateKey         *rsa.PrivateKey
+	NoAuthn            bool
+}
+
+// JWTAuthFromConfig returns a JWT authentication middleware.
+func JWTAuthFromConfig(conf *JWTAuthConfig) echo.MiddlewareFunc {
+	if conf == nil {
+		conf = &JWTAuthConfig{}
+	}
+
+	if conf.TokenCookieName == "" {
+		conf.TokenCookieName = "jwt-token"
+	}
+
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			return authn(conf, c, next)
+		}
+	}
 }
 
 // OAuth2FromConfig returns an OAuth2 JWT authn middleware.
@@ -55,14 +79,17 @@ func OAuth2FromConfig(conf *OAuth2Config) echo.MiddlewareFunc {
 			case conf.CallbackPath:
 				return callback(conf, c)
 			default:
-				return authn(conf, c, next)
+				if conf.NoAuthn {
+					return next(c)
+				}
+				return authn(&conf.JWTAuthConfig, c, next)
 			}
 		}
 	}
 }
 
 //return c.Redirect(http.StatusFound, loginPath+"?"+keyNextPage+"="+url.QueryEscape(c.Request().URL.RequestURI()))
-func authn(conf *OAuth2Config, c echo.Context, next echo.HandlerFunc) error {
+func authn(conf *JWTAuthConfig, c echo.Context, next echo.HandlerFunc) error {
 	cookie, err := c.Cookie(conf.TokenCookieName)
 	if err != nil && err != http.ErrNoCookie {
 		return err
@@ -105,6 +132,7 @@ func logout(conf *OAuth2Config, c echo.Context) error {
 		Value:   "",
 		Expires: time.Now(),
 		MaxAge:  -1,
+		Path:    "/",
 	}
 
 	c.SetCookie(cookie)
@@ -143,6 +171,7 @@ func callback(conf *OAuth2Config, c echo.Context) error {
 		Name:    conf.TokenCookieName,
 		Value:   tokenString,
 		Expires: expire,
+		Path:    "/",
 	}
 
 	c.SetCookie(cookie)

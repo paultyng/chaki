@@ -1,4 +1,4 @@
-package middleware
+package sso
 
 import (
 	"encoding/json"

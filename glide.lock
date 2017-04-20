@@ -1,5 +1,5 @@
-hash: 461f83af378d4ea98f214145bcfc09cd23d56956eed2c1795c736ebe7dce39cb
-updated: 2017-04-16T19:30:21.910973815-04:00
+hash: fdb70738b5331a0d559ac31ec007ca4ca4c38d0f57786a394c23f51ba730a5fa
+updated: 2017-04-19T16:45:28.113546831-04:00
 imports:
 - name: github.com/denisenkom/go-mssqldb
   version: 8e6115d5172422909579b49fd1fe0f7591416e4b
@@ -9,6 +9,10 @@ imports:
   version: ff7bc41d4007f67e5456703c34342df4e0113f64
 - name: github.com/ghodss/yaml
   version: 0ca9ea5df5451ffdf184b4428c902747c2c11cd7
+- name: github.com/golang/protobuf
+  version: c9c7427a2a70d2eb3bafa0ab2dc163e45f143317
+  subpackages:
+  - proto
 - name: github.com/hashicorp/hcl
   version: 630949a3c5fa3c613328e1b8256052cbc2327c9b
   subpackages:
@@ -26,6 +30,10 @@ imports:
   version: f980a91bdc37abef88269b8f122d7de6352102f5
   subpackages:
   - reflectx
+- name: github.com/jteeuwen/go-bindata
+  version: bbd0c6e271208dce66d8fda4bc536453cd27fc4a
+  subpackages:
+  - '...'
 - name: github.com/labstack/echo
   version: 8d504c1b699c757b267255c53b3e5219f9974abc
   subpackages:
@@ -95,6 +103,10 @@ imports:
   version: f2499483f923065a842d38eb4c7f1927e6fc6e6d
   subpackages:
   - context
+- name: golang.org/x/oauth2
+  version: a6bd8cefa1811bd24b86f8902872e4e8225f74c4
+  subpackages:
+  - internal
 - name: golang.org/x/sys
   version: d75a52659825e75fff6158388dddc6a5b04f9ba5
   subpackages:
@@ -104,6 +116,16 @@ imports:
   subpackages:
   - transform
   - unicode/norm
+- name: google.golang.org/appengine
+  version: 170382fa85b10b94728989dfcf6cc818b335c952
+  subpackages:
+  - internal
+  - internal/base
+  - internal/datastore
+  - internal/log
+  - internal/remote_api
+  - internal/urlfetch
+  - urlfetch
 - name: gopkg.in/yaml.v2
   version: 4c78c975fe7c825c6d1466c42be594d1d6f3aba6
 testImports:
