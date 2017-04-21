@@ -1,6 +1,7 @@
 package tasks
 
 import (
+	"fmt"
 	"io"
 	"io/ioutil"
 
@@ -15,15 +16,26 @@ type OptionalStringArray []string
 type Config struct {
 	Tasks         map[string]Task         `json:"tasks"`
 	DBConnections map[string]DBConnection `json:"dbConnections,omitempty"`
+	DBMaxRows     int                     `json:"dbMaxRows,omitempty"`
 }
 
-// DBTask represents the database specific parameters for a task
+// DBTask represents the database specific parameters for a task.
 type DBTask struct {
 	Connection string              `json:"connection"`
 	SQL        OptionalStringArray `json:"sql"`
 }
 
-// DBConnection represents the connection info for a DB task
+// DBTaskResult represents information about the DBTask execution.
+type DBTaskResult struct {
+	Statements []DBStatementResult
+}
+
+// DBStatementResult contains information about a specific statements execution as part of a task.
+type DBStatementResult struct {
+	Data []map[string]interface{}
+}
+
+// DBConnection represents the connection info for a DB task.
 type DBConnection struct {
 	Driver     string `json:"driver"`
 	DataSource string `json:"dataSource"`
@@ -38,17 +50,23 @@ type Task struct {
 	DB          *DBTask                `json:"db,omitempty"`
 }
 
-// NewConfig creates a Config by unmarshaling YAML or JSON from the Reader
+// NewConfig creates a Config by unmarshaling YAML or JSON from the Reader.
 func NewConfig(r io.Reader) (*Config, error) {
 	bytes, err := ioutil.ReadAll(r)
 	if err != nil {
 		return nil, err
 	}
 
-	c := &Config{}
+	c := &Config{
+		DBMaxRows: 100,
+	}
 	err = yaml.Unmarshal(bytes, c)
 	if err != nil {
 		return nil, err
+	}
+
+	if c.DBMaxRows > 500 {
+		return nil, fmt.Errorf("dbMaxRows should be <= 500, it is %d", c.DBMaxRows)
 	}
 
 	return c, nil

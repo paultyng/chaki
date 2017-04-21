@@ -4,6 +4,7 @@ import Form from "react-jsonschema-form";
 
 import { assignDeep } from './assignDeep';
 import Navbar from './Navbar';
+import ResultTable from './ResultTable';
 
 class TaskDetail extends Component {
   constructor(props) {
@@ -35,7 +36,16 @@ class TaskDetail extends Component {
         data: formData,
       }),
     })
-    .then(({ status }) => {
+    .then(resp => {
+      const { status } = resp;
+
+      return resp.json()
+        .then(m => {
+          m.status = status;
+          return m;
+        })
+    })
+    .then(({ status, statements }) => {
       if (status !== 200) {
         throw new Error("Error running task");
       }
@@ -43,6 +53,7 @@ class TaskDetail extends Component {
       this.setState({
         lastResult: {
           success: true,
+          statements,
         },
       });
     })
@@ -70,6 +81,7 @@ class TaskDetail extends Component {
   render() {
     const { lastResult } = this.state;
     const schema = assignDeep({
+      properties: {},
     }, this.props.task.schema, {
       type: 'object',
       title: null,
@@ -82,15 +94,25 @@ class TaskDetail extends Component {
     }, this.props.task.uiSchema);
     let result = "";
 
-    console.log(lastResult);
-
     if (lastResult) {
-      if (lastResult.success) {
-        result = (
-          <div ref={r => this.resultDiv = r} className="alert alert-success">
-            Success!
-          </div>
-        );
+      const { success, statements } = lastResult;
+      if (success) {
+        if (statements) {
+          result = (
+            <div ref={r => this.resultDiv = r} className="panel panel-success">
+              <div className="panel-heading">Success!</div>
+              {statements.map((s, i) =>
+                <ResultTable key={i} caption={`Statement ${i+1}`} data={s.data} />
+              )}
+            </div>
+          )
+        } else {
+          result = (
+            <div ref={r => this.resultDiv = r} className="alert alert-success">
+              Success!
+            </div>
+          );
+        }
       } else {
         result = (
           <div ref={r => this.resultDiv = r} className="alert alert-danger">

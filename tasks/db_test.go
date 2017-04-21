@@ -11,6 +11,7 @@ func TestRun(t *testing.T) {
 	assert := assert.New(t)
 
 	conf := &Config{
+		DBMaxRows: 10,
 		DBConnections: map[string]DBConnection{
 			"sqlite": DBConnection{
 				Driver:     "sqlite3",
@@ -48,7 +49,8 @@ func TestRun(t *testing.T) {
 			SQL:        c.sql,
 		}
 
-		err := db.run(c.data, conf)
+		// TODO: look at result object
+		_, err := db.run(c.data, conf)
 		assert.NoError(err, "case %d", i)
 	}
 }

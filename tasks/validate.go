@@ -31,6 +31,9 @@ func (ve *ValidationError) Error() string {
 
 // Validate checks the data for a task against it's JSON schema
 func (t *Task) Validate(data map[string]interface{}) error {
+	if t.Schema == nil {
+		return nil
+	}
 	schemaLoader := gojsonschema.NewGoLoader(t.Schema)
 	dataLoader := gojsonschema.NewGoLoader(data)
 

@@ -65,7 +65,7 @@ parameter or on STDIN, and the CLI will handle the rest.
 
 		log.Printf("[INFO] Running task %s", taskName)
 
-		err = config.Run(taskName, taskData)
+		res, err := config.Run(taskName, taskData)
 		if ve, ok := err.(*tasks.ValidationError); ok {
 			for field, errors := range ve.FieldErrors() {
 				for _, e := range errors {
@@ -76,6 +76,15 @@ parameter or on STDIN, and the CLI will handle the rest.
 		}
 		if err != nil {
 			return err
+		}
+
+		log.Printf("[INFO] Execute success!")
+
+		switch t := res.(type) {
+		case *tasks.DBTaskResult:
+			//TODO: output data
+		default:
+			log.Printf("[WARN] Unexected result type %T", t)
 		}
 
 		return nil
