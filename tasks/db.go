@@ -7,6 +7,24 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+// see https://github.com/jmoiron/sqlx/issues/135
+func mapBytesToString(m map[string]interface{}) {
+	for k, v := range m {
+		if b, ok := v.([]byte); ok {
+			m[k] = string(b)
+		}
+	}
+}
+
+func mapScan(rows *sqlx.Rows, dest map[string]interface{}) error {
+	err := rows.MapScan(dest)
+	if err != nil {
+		return err
+	}
+	mapBytesToString(dest)
+	return nil
+}
+
 func (t *DBTask) run(data map[string]interface{}, c *Config) (*DBTaskResult, error) {
 	dbc, ok := c.DBConnections[t.Connection]
 	if !ok {
@@ -49,7 +67,7 @@ func (t *DBTask) run(data map[string]interface{}, c *Config) (*DBTaskResult, err
 			}
 
 			m := map[string]interface{}{}
-			err := rx.MapScan(m)
+			err := mapScan(rx, m)
 			if err != nil {
 				return nil, err
 			}
