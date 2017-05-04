@@ -25,6 +25,38 @@ func mapScan(rows *sqlx.Rows, dest map[string]interface{}) error {
 	return nil
 }
 
+func runSQL(tx *sqlx.Tx, sql string, data map[string]interface{}, maxResults int) (*DBStatementResult, bool, error) {
+	maxResultsHit := false
+	rx, err := tx.NamedQuery(sql, data)
+	if err != nil {
+		return nil, maxResultsHit, err
+	}
+	defer rx.Close()
+
+	sr := &DBStatementResult{
+		Data: make([]map[string]interface{}, 0, maxResults),
+	}
+
+	rowI := 0
+	for rx.Next() {
+		rowI++
+		if rowI > maxResults {
+			maxResultsHit = true
+			break
+		}
+
+		m := map[string]interface{}{}
+		err := mapScan(rx, m)
+		if err != nil {
+			return nil, maxResultsHit, err
+		}
+
+		sr.Data = append(sr.Data, m)
+	}
+
+	return sr, maxResultsHit, nil
+}
+
 func (t *DBTask) run(data map[string]interface{}, c *Config) (*DBTaskResult, error) {
 	dbc, ok := c.DBConnections[t.Connection]
 	if !ok {
@@ -36,10 +68,17 @@ func (t *DBTask) run(data map[string]interface{}, c *Config) (*DBTaskResult, err
 		return nil, err
 	}
 
+	rollback := true
+
 	tx, err := conn.Beginx()
 	if err != nil {
 		return nil, err
 	}
+	defer func() {
+		if rollback {
+			tx.Rollback()
+		}
+	}()
 
 	sql := []string(t.SQL)
 	res := &DBTaskResult{
@@ -47,40 +86,20 @@ func (t *DBTask) run(data map[string]interface{}, c *Config) (*DBTaskResult, err
 	}
 
 	for i, s := range sql {
-		rx, err := tx.NamedQuery(s, data)
+		sr, maxResults, err := runSQL(tx, s, data, c.DBMaxRows)
 		if err != nil {
-			tx.Rollback()
 			return nil, err
 		}
-		defer rx.Close()
-
-		sr := DBStatementResult{
-			Data: make([]map[string]interface{}, 0, c.DBMaxRows),
+		if maxResults {
+			log.Printf("[WARN] Too many rows returned by statement %d of task", i)
 		}
-
-		rowI := 0
-		for rx.Next() {
-			rowI++
-			if rowI > c.DBMaxRows {
-				log.Printf("[WARN] Too many rows returned by statement %d of task", i)
-				break
-			}
-
-			m := map[string]interface{}{}
-			err := mapScan(rx, m)
-			if err != nil {
-				return nil, err
-			}
-
-			sr.Data = append(sr.Data, m)
-		}
-		res.Statements[i] = sr
+		res.Statements[i] = *sr
 	}
 
 	err = tx.Commit()
 	if err != nil {
 		return nil, err
 	}
-
+	rollback = false
 	return res, nil
 }
