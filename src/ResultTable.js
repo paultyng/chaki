@@ -48,6 +48,7 @@ class ResultTable extends Component {
       range.setEndAfter(this.tBody);
       sel.addRange(range);
       document.execCommand('copy');
+      sel.removeAllRanges();
     }
   }
 
