@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import './ResultTable.css';
 
 function ValueCell({ data }) {
   if(data === null) {
@@ -32,6 +33,24 @@ function ValueCell({ data }) {
 }
 
 class ResultTable extends Component {
+  copyTable() {
+    if (typeof document !== 'undefined'
+      && typeof window !== 'undefined'
+      && document.createRange
+      && document.execCommand
+      && window.getSelection) {
+
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+
+      const range = document.createRange();
+      range.setStartBefore(this.tHead);
+      range.setEndAfter(this.tBody);
+      sel.addRange(range);
+      document.execCommand('copy');
+    }
+  }
+
   render() {
     const { caption, data } = this.props;
 
@@ -49,25 +68,24 @@ class ResultTable extends Component {
     const cols = Object.keys(data[0])
 
     return (
-      <table className="table table-striped table-condensed small">
+      <table ref={r => { this.table = r; }} className="table table-striped table-condensed small result-table">
         <caption>
           { caption }
           <br />
           <small>{ data.length } rows</small>
-        </caption>
 
-        <thead>
+          <button className="btn btn-xs" type="button" onClick={() => this.copyTable()}>Copy</button>
+        </caption>
+        <thead ref={r => { this.tHead = r; }}>
           <tr>
-            <th>#</th>
             {cols.map(c =>
               <th key={c}>{c}</th>
             )}
           </tr>
         </thead>
-        <tbody>
+        <tbody ref={r => { this.tBody = r; }}>
           {data.map((r, i) =>
             <tr key={i}>
-              <td>{i + 1}</td>
               {cols.map(c =>
                 <td key={c}>
                   <ValueCell data={r[c]} />

@@ -1,0 +1,26 @@
+.result-table {
+  thead {
+    tr {
+      th:first-child::before {
+        content: '#';
+        min-width: 2em;
+        margin-right: 0.5em;
+        text-align: right;
+      }
+    }
+  }
+  tbody {
+    counter-reset: rowNumber;
+
+    tr {
+      counter-increment: rowNumber;
+
+      td:first-child::before {
+        content: counter(rowNumber);
+        min-width: 2em;
+        margin-right: 0.5em;
+        text-align: right;
+      }
+    }
+  }
+}

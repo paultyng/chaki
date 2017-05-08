@@ -14,7 +14,7 @@
     "js-yaml": "^3.8.3",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
-    "react-jsonschema-form": "^0.46.0",
+    "react-jsonschema-form": "^0.48.2",
     "whatwg-fetch": "^2.0.3"
   },
   "scripts": {
