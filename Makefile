@@ -1,4 +1,4 @@
-NOVENDOR = $(shell glide novendor | grep -v node_modules | grep -v static)
+NOVENDOR = $(shell go list ./... | grep -v vendor | grep -v node_modules | grep -v static)
 GO_BUILD_ENV := CGO_ENABLED=0 GOOS=linux GOARCH=amd64
 DOCKER_BUILD=$(shell pwd)/.docker_build
 DOCKER_CMD=$(DOCKER_BUILD)/chaki

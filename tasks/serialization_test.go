@@ -6,7 +6,7 @@ import (
 	"github.com/ghodss/yaml"
 	"github.com/stretchr/testify/assert"
 
-	"go.ua-ecm.com/chaki/tasks"
+	"github.com/paultyng/chaki/tasks"
 )
 
 func TestOptionalStringArrayUnmarshal(t *testing.T) {

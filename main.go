@@ -5,7 +5,7 @@ import (
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 
-	"go.ua-ecm.com/chaki/cmd"
+	"github.com/paultyng/chaki/cmd"
 )
 
 func main() {

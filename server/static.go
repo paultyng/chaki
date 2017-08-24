@@ -7,9 +7,9 @@ import (
 	"path"
 	"path/filepath"
 
-	"go.ua-ecm.com/chaki/static"
-
 	"github.com/labstack/echo"
+
+	"github.com/paultyng/chaki/static"
 )
 
 const index = "index.html"

@@ -3,9 +3,9 @@ package server
 import (
 	"net/http"
 
-	"go.ua-ecm.com/chaki/tasks"
-
 	"github.com/labstack/echo"
+
+	"github.com/paultyng/chaki/tasks"
 )
 
 func (s *Server) getTasks(c echo.Context) error {

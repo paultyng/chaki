@@ -11,7 +11,7 @@ import (
 	"github.com/ghodss/yaml"
 	"github.com/spf13/cobra"
 
-	"go.ua-ecm.com/chaki/tasks"
+	"github.com/paultyng/chaki/tasks"
 )
 
 // execCmd represents the exec command

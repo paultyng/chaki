@@ -4,12 +4,12 @@ import (
 	"crypto/rsa"
 	"fmt"
 
-	"golang.org/x/oauth2"
-
 	"github.com/labstack/echo"
 	glog "github.com/labstack/gommon/log"
-	"go.ua-ecm.com/chaki/server/sso"
-	"go.ua-ecm.com/chaki/tasks"
+	"golang.org/x/oauth2"
+
+	"github.com/paultyng/chaki/server/sso"
+	"github.com/paultyng/chaki/tasks"
 )
 
 const githubEnterpriseDomain = "github.ua.com"

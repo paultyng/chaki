@@ -7,7 +7,8 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"go.ua-ecm.com/chaki/server"
+
+	"github.com/paultyng/chaki/server"
 )
 
 // serveCmd represents the serve command

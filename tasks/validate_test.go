@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"go.ua-ecm.com/chaki/tasks"
+	"github.com/paultyng/chaki/tasks"
 )
 
 func TestValidate(t *testing.T) {

@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"go.ua-ecm.com/chaki/tasks"
+	"github.com/paultyng/chaki/tasks"
 )
 
 func addTaskConfigFlags(cmd *cobra.Command) {
