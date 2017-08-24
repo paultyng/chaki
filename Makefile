@@ -38,7 +38,7 @@ clean-codegen:
 
 # The go-install is to cache the binary data build
 static/build.go:
-	yarn build
+	npm run build
 	go-bindata -o static/build.go -pkg static build/...
 	go install
 
