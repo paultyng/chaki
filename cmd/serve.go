@@ -54,18 +54,18 @@ func init() {
 	RootCmd.AddCommand(serveCmd)
 
 	serveCmd.PersistentFlags().StringP("bind", "b", ":3000", "binding for the server")
-	viper.BindPFlag("service-bind", serveCmd.PersistentFlags().Lookup("bind"))
+	_ = viper.BindPFlag("service-bind", serveCmd.PersistentFlags().Lookup("bind"))
 	viper.SetDefault("service-bind", ":3000")
 
 	serveCmd.PersistentFlags().StringP("key", "k", "chaki.key", "jwt private key file")
-	viper.BindPFlag("jwt-key-file", serveCmd.PersistentFlags().Lookup("key"))
+	_ = viper.BindPFlag("jwt-key-file", serveCmd.PersistentFlags().Lookup("key"))
 	viper.SetDefault("jwt-key-file", "chaki.key")
 
 	serveCmd.PersistentFlags().String("client-id", "", "OAuth2 client ID")
-	viper.BindPFlag("oauth-client-id", serveCmd.PersistentFlags().Lookup("client-id"))
+	_ = viper.BindPFlag("oauth-client-id", serveCmd.PersistentFlags().Lookup("client-id"))
 
 	serveCmd.PersistentFlags().String("client-secret", "", "OAuth2 client secret")
-	viper.BindPFlag("oauth-client-secret", serveCmd.PersistentFlags().Lookup("client-secret"))
+	_ = viper.BindPFlag("oauth-client-secret", serveCmd.PersistentFlags().Lookup("client-secret"))
 
 	addTaskConfigFlags(serveCmd)
 }

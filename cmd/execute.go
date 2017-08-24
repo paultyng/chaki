@@ -62,6 +62,9 @@ parameter or on STDIN, and the CLI will handle the rest.
 		}
 
 		config, err := loadTaskConfig(cmd)
+		if err != nil {
+			return err
+		}
 
 		log.Printf("[INFO] Running task %s", taskName)
 
